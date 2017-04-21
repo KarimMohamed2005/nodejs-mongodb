@@ -3,6 +3,7 @@
 const mongoose = require("mongoose"),
 	config     = require("../config/config.js"), 
 	Dish       = require("../models/dish.js"),
+	Leader     = require("../models/leader.js"),
 	utils      = require("../utils/utils.js");
 
 // Function to establish connection for the Database
@@ -92,6 +93,80 @@ exports.deleteDish = function (dish, callback) {
 	Dish.findOneAndRemove({name: dish}, function (err, success) {
 		if (err) {
 			utils.log("[deleteDoc] Error deleting the doc " + err);
+			callback(err);
+			return;
+		}
+		callback(undefined, success);
+	});
+};
+
+// Function to get the information of a Leader
+exports.getLeader = function (emailId, callback) {
+	Leader.find({emailId: emailId}, function (err, success) {
+		if (err) {
+			utils.log("[getLeader] Error fetching the doc " + err);
+			callback(err);
+			return;
+		}
+		callback(undefined, success);
+	});
+};
+
+// Function to create / update the Leader document
+exports.createLeader = function(emailId, leaderInfo, callback) {
+	let leader;
+	Leader.find({emailId: emailId}, function (err, success) {
+		if (err) {
+			utils.log("[createLeader] Error fetching the doc " + err);
+			callback(err);
+			return;
+		}
+		// If the leader is available, Then update the existing document
+		if (success.length > 0) {
+			leader = success[0];
+			leader.save(function(err, success) {
+				if (err) {
+					utils.log("[createLeader] Error updating the doc " + err);
+					callback(err);
+					return;
+				}
+				callback(undefined, success);
+			});
+			return;
+		}
+		// If the leader is not available then create new document for Leader 
+		let date = new Date().toISOString();
+		// To create the model for new Leader
+		leader = Leader({
+			name      : leaderInfo.name,
+			emailId   : emailId,
+			contactNo : leaderInfo.contactNo,
+			date  : {
+				creationDate: date,
+				lastModifiedDate: date
+			},
+			user  : {
+				createdBy: leaderInfo.user.createdBy,
+				lastModifiedBy: leaderInfo.user.lastModifiedBy
+			}
+		});
+		// Saving the Leader model
+		leader.save(function (err, success) {
+			if (err) {
+				utils.log("[createLeader] Error creating the doc " + err);
+				callback(err);
+				return;
+			}
+			callback(undefined, success);
+		});
+	});
+};
+
+// Function to Delete the Leader information
+exports.deleteLeader  = function (emailId, callback) {
+	Leader.findOneAndRemove({emailId: emailId}, function (err, success) {
+		if (err) {
+			utils.log("[deleteLeader] Error deleting the doc " + err);
 			callback(err);
 			return;
 		}
