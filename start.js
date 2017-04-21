@@ -6,14 +6,15 @@
 /*globals require, process */
 /*eslint no-console: ["error", { allow: ["log", "warn", "error"] }] */
 
-const express  = require("express"),
-	app        = express(),
-	bodyParser = require("body-parser"),
-	dishRouter = express.Router(),
-	leadRouter = express.Router(),
-	dish       = require("./route/dishRouter.js"),
-	leader     = require("./route/leaderRouter.js");
-    /*promo      = require("./route/promoRouter.js");*/
+const express   = require("express"),
+	app         = express(),
+	bodyParser  = require("body-parser"),
+	dishRouter  = express.Router(),
+	leadRouter  = express.Router(),
+	promoRouter = express.Router(),
+	dish        = require("./route/dishRouter.js"),
+	leader      = require("./route/leaderRouter.js"),
+	promo       = require("./route/promoRouter.js");
 
 // Body-parser (To parse the request body)
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -51,6 +52,15 @@ leadRouter.put("/:id", leader.updateLeader);
 leadRouter.delete("/:id", leader.deleteLeader);
 
 app.use("/leadership", leadRouter);
+
+// Api to get the Prmotion information
+promoRouter.get("/:id", promo.getPromotion);
+// Api to create / update the promotion
+promoRouter.put("/:id", promo.updatePromotion);
+// Api to delete the promotion
+promoRouter.delete("/:id", promo.deletePromotion);
+
+app.use("/promotions", promoRouter);
 
 // Start the service
 app.listen(app.get("port"));

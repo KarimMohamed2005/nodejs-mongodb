@@ -4,6 +4,7 @@ const mongoose = require("mongoose"),
 	config     = require("../config/config.js"), 
 	Dish       = require("../models/dish.js"),
 	Leader     = require("../models/leader.js"),
+	Promotion  = require("../models/promotion.js"),
 	utils      = require("../utils/utils.js");
 
 // Function to establish connection for the Database
@@ -167,6 +168,79 @@ exports.deleteLeader  = function (emailId, callback) {
 	Leader.findOneAndRemove({emailId: emailId}, function (err, success) {
 		if (err) {
 			utils.log("[deleteLeader] Error deleting the doc " + err);
+			callback(err);
+			return;
+		}
+		callback(undefined, success);
+	});
+};
+
+// Function to the information of a promotion
+exports.getPromotion = function (promoId, callback) {
+	Promotion.find({promotionId: promoId}, function (err, success) {
+		if (err) {
+			utils.log("[getPromotion] Error fetching the doc " + err);
+			callback(err);
+			return;
+		}
+		callback(undefined, success);
+	});
+};
+
+// Function to update / create the promotion information
+exports.createPromotion = function (promoId, promoInfo, callback) {
+	let promotion;
+	Promotion.find({promotionId: promoId}, function (err, success) {
+		if (err) {
+			utils.log("[createPromotion] Error fetching the doc " + err);
+			callback(err);
+			return;
+		}
+		// If the promotion is available, Then update the existing document
+		if (success.length > 0) {
+			promotion = success[0];
+			promotion.save(function(err, success) {
+				if (err) {
+					utils.log("[createPromotion] Error updating the doc " + err);
+					callback(err);
+					return;
+				}
+				callback(undefined, success);
+			});
+			return;
+		}
+		// If the promotion is not available then create new document for promotion 
+		let date = new Date().toISOString();
+		// To create the model for new promotion
+		promotion = Promotion({
+			promotionId : promoId,
+			comment     : promoInfo.comment, 
+			date        : {
+				creationDate: date,
+				lastModifiedDate: date
+			},
+			user  : {
+				createdBy: promoInfo.user.createdBy,
+				lastModifiedBy: promoInfo.user.lastModifiedBy
+			}
+		});
+		// Saving the promotion model
+		promotion.save(function (err, success) {
+			if (err) {
+				utils.log("[createPromotion] Error creating the doc " + err);
+				callback(err);
+				return;
+			}
+			callback(undefined, success);
+		});
+	});
+};
+
+// Function to delete the promotion informaion
+exports.deletePromotion = function (promoId, callback) {
+	Promotion.findOneAndRemove({promotionId: promoId}, function (err, success) {
+		if (err) {
+			utils.log("[deletePromotion] Error deleting the doc " + err);
 			callback(err);
 			return;
 		}
