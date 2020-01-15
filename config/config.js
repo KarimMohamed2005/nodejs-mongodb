@@ -4,7 +4,7 @@
 */
 let Config = function () {
 	return {
-		dbPath : "mongodb://localhost/sample-db", 
+		dbPath : "mongodb://karim:lolHaha2005@localhost/sample-db", 
 	};
 };
 
