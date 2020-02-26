@@ -41,7 +41,7 @@ dishRouter.get("/:id", dish.getDishes);
 dishRouter.put("/:id", dish.updateDish);
 // Api to delete the dishes not required
 dishRouter.delete("/:id", dish.deleteDish);
-
+app.get('/', (req, res) => res.send('Hello World!'))
 app.use("/dishes", dishRouter);
 
 // Api to get the Leader information.
