@@ -33,7 +33,7 @@ app.use(function (req, res, next) {
 });
 
 // Set the port no
-app.set("port", process.env.PORT || 3000);
+app.set("port", process.env.PORT);
 
 // Api to get the dishes information.
 dishRouter.get("/:id", dish.getDishes);
