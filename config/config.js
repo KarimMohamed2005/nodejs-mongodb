@@ -4,7 +4,7 @@
 */
 let Config = function () {
 	return {
-		dbPath : "mongodb://ubuntu:lolHaha2005@localhost/sample-db?authSource=admin", 
+		dbPath : "mongodb://dplyr:dplyr2020@localhost/dplyr-test?authSource=admin", 
 	};
 };
 
